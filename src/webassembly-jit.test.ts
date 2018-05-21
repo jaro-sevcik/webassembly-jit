@@ -1,11 +1,12 @@
 import * as Wasm from "./webassembly-jit";
+import { Opcode } from "./webassembly-jit";
 
 test("run_get_constant", () => {
     const builder = new Wasm.ModuleBuilder();
     builder.addType(Wasm.kSig_i_v);
     builder.addFunction("main", Wasm.kSig_i_v)
       .addBody([
-        Wasm.kExprI32Const, 11])   // --
+        Opcode.kI32Const, 11])   // --
       .exportAs("main");
 
     const i = builder.instantiate();
@@ -21,15 +22,15 @@ test("run_store_load", () => {
     builder.addType(Wasm.kSig_i_ii);
     builder.addFunction("store", Wasm.kSig_v_ii)
         .addBody([
-            Wasm.kExprGetLocal, 0,         // --
-            Wasm.kExprGetLocal, 1,         // --
-            Wasm.kExprI32StoreMem, 0, 0])  // --
+            Opcode.kGetLocal, 0,         // --
+            Opcode.kGetLocal, 1,         // --
+            Opcode.kI32StoreMem, 0, 0])  // --
       .exportAs("store");
 
     builder.addFunction("load", Wasm.kSig_i_i)
       .addBody([
-        Wasm.kExprGetLocal, 0,        // --
-        Wasm.kExprI32LoadMem, 0, 0])  // --
+        Opcode.kGetLocal, 0,        // --
+        Opcode.kI32LoadMem, 0, 0])  // --
       .exportAs("load");
 
     const i = builder.instantiate();
@@ -48,9 +49,9 @@ test("run_store_load_export_import_memory", () => {
         builder.addType(Wasm.kSig_i_ii);
         builder.addFunction("store", Wasm.kSig_v_ii)
             .addBody([
-                Wasm.kExprGetLocal, 0,         // --
-                Wasm.kExprGetLocal, 1,         // --
-                Wasm.kExprI32StoreMem, 0, 0])  // --
+                Opcode.kGetLocal, 0,         // --
+                Opcode.kGetLocal, 1,         // --
+                Opcode.kI32StoreMem, 0, 0])  // --
         .exportAs("store");
         i1 = builder.instantiate();
     }
@@ -62,8 +63,8 @@ test("run_store_load_export_import_memory", () => {
         builder.addType(Wasm.kSig_i_ii);
         builder.addFunction("load", Wasm.kSig_i_i)
             .addBody([
-                Wasm.kExprGetLocal, 0,        // --
-                Wasm.kExprI32LoadMem, 0, 0])  // --
+                Opcode.kGetLocal, 0,        // --
+                Opcode.kI32LoadMem, 0, 0])  // --
             .exportAs("load");
         i2 = builder.instantiate(
             { I : { imported_mem : i1.exports.exported_mem}});
@@ -87,12 +88,12 @@ test("run_indirect_call_two_modules", () => {
         builder.addType(Wasm.kSig_i_ii);
         sig_index1 = builder.addType(Wasm.kSig_i_v);
         const f1 = builder.addFunction("f1", sig_index1)
-        .addBody([Wasm.kExprI32Const, 11]);
+        .addBody([Opcode.kI32Const, 11]);
 
         builder.addFunction("main", Wasm.kSig_i_i)
         .addBody([
-            Wasm.kExprGetLocal, 0,   // --
-            Wasm.kExprCallIndirect, sig_index1, kTableZero])  // --
+            Opcode.kGetLocal, 0,   // --
+            Opcode.kCallIndirect, sig_index1, kTableZero])  // --
         .exportAs("main");
 
         builder.setFunctionTableBounds(kTableSize, kTableSize);
@@ -110,12 +111,12 @@ test("run_indirect_call_two_modules", () => {
         builder.addType(Wasm.kSig_i_ii);
         sig_index2 = builder.addType(Wasm.kSig_i_v);
         const f2 = builder.addFunction("f2", sig_index2)
-        .addBody([Wasm.kExprI32Const, 22]);
+        .addBody([Opcode.kI32Const, 22]);
 
         builder.addFunction("main", Wasm.kSig_i_i)
         .addBody([
-            Wasm.kExprGetLocal, 0,   // --
-            Wasm.kExprCallIndirect, sig_index2, kTableZero])  // --
+            Opcode.kGetLocal, 0,   // --
+            Opcode.kCallIndirect, sig_index2, kTableZero])  // --
         .exportAs("main");
 
         builder.addImportedTable("z", "table", kTableSize, kTableSize);

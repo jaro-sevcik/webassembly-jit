@@ -50,41 +50,34 @@ function bytesWithHeader() : ArrayBuffer {
     return buffer;
 }
 
-export const kDeclNoLocals = 0;
-
 // Section declaration constants
-export const kUnknownSectionCode = 0;
-export const kTypeSectionCode = 1;        // Function signature declarations
-export const kImportSectionCode = 2;      // Import declarations
-export const kFunctionSectionCode = 3;    // Function declarations
-export const kTableSectionCode = 4;       // Indirect function table
-                                          // and other tables
-export const kMemorySectionCode = 5;      // Memory attributes
-export const kGlobalSectionCode = 6;      // Global declarations
-export const kExportSectionCode = 7;      // Exports
-export const kStartSectionCode = 8;       // Start function declaration
-export const kElementSectionCode = 9;     // Elements section
-export const kCodeSectionCode = 10;       // Function code
-export const kDataSectionCode = 11;       // Data segments
-export const kNameSectionCode = 12;       // Name section (encoded as string)
-export const kExceptionSectionCode = 13;  // Exception section (must appear
-                                          // before code section)
+enum SectionCode {
+    kUnknown = 0,
+    kType = 1,        // Function signature declarations
+    kImport = 2,      // Import declarations
+    kFunction = 3,    // Function declarations
+    kTable = 4,       // Indirect function table and other tables
+    kMemory = 5,      // Memory attributes
+    kGlobal = 6,      // Global declarations
+    kExport = 7,      // Exports
+    kStart = 8,       // Start function declaration
+    kElement = 9,     // Elements section
+    kCode = 10,       // Function code
+    kData = 11,       // Data segments
+    kName = 12,       // Name section (encoded as string)
+    kException = 13,  // Exception section (must appear
+                      // before code section)
+}
 
 // Name section types
-export const kModuleNameCode = 0;
-export const kFunctionNamesCode = 1;
-export const kLocalNamesCode = 2;
+enum NameCode {
+    kModule = 0,
+    kFunctions = 1,
+    kLocals = 2,
+}
 
-export const kWasmFunctionTypeForm = 0x60;
-export const kWasmAnyFunctionTypeForm = 0x70;
-
-export const kHasMaximumFlag = 1;
-
-// Function declaration flags
-export const kDeclFunctionName = 0x01;
-export const kDeclFunctionImport = 0x02;
-export const kDeclFunctionLocals = 0x04;
-export const kDeclFunctionExport = 0x08;
+const kWasmFunctionTypeForm = 0x60;
+const kWasmAnyFunctionTypeForm = 0x70;
 
 // Local types
 export enum Type {
@@ -174,215 +167,217 @@ function makeSig_r_xx(r : Type, x : Type) : ISignature {
     return makeSig([x, x], [r]);
 }
 
-// Opcodes
-export const kExprUnreachable = 0x00;
-export const kExprNop = 0x01;
-export const kExprBlock = 0x02;
-export const kExprLoop = 0x03;
-export const kExprIf = 0x04;
-export const kExprElse = 0x05;
-export const kExprTry = 0x06;
-export const kExprCatch = 0x07;
-export const kExprThrow = 0x08;
-export const kExprEnd = 0x0b;
-export const kExprBr = 0x0c;
-export const kExprBrIf = 0x0d;
-export const kExprBrTable = 0x0e;
-export const kExprReturn = 0x0f;
-export const kExprCallFunction = 0x10;
-export const kExprCallIndirect = 0x11;
-export const kExprDrop = 0x1a;
-export const kExprSelect = 0x1b;
-export const kExprGetLocal = 0x20;
-export const kExprSetLocal = 0x21;
-export const kExprTeeLocal = 0x22;
-export const kExprGetGlobal = 0x23;
-export const kExprSetGlobal = 0x24;
-export const kExprI32Const = 0x41;
-export const kExprI64Const = 0x42;
-export const kExprF32Const = 0x43;
-export const kExprF64Const = 0x44;
-export const kExprRefNull = 0xd0;
-export const kExprI32LoadMem = 0x28;
-export const kExprI64LoadMem = 0x29;
-export const kExprF32LoadMem = 0x2a;
-export const kExprF64LoadMem = 0x2b;
-export const kExprI32LoadMem8S = 0x2c;
-export const kExprI32LoadMem8U = 0x2d;
-export const kExprI32LoadMem16S = 0x2e;
-export const kExprI32LoadMem16U = 0x2f;
-export const kExprI64LoadMem8S = 0x30;
-export const kExprI64LoadMem8U = 0x31;
-export const kExprI64LoadMem16S = 0x32;
-export const kExprI64LoadMem16U = 0x33;
-export const kExprI64LoadMem32S = 0x34;
-export const kExprI64LoadMem32U = 0x35;
-export const kExprI32StoreMem = 0x36;
-export const kExprI64StoreMem = 0x37;
-export const kExprF32StoreMem = 0x38;
-export const kExprF64StoreMem = 0x39;
-export const kExprI32StoreMem8 = 0x3a;
-export const kExprI32StoreMem16 = 0x3b;
-export const kExprI64StoreMem8 = 0x3c;
-export const kExprI64StoreMem16 = 0x3d;
-export const kExprI64StoreMem32 = 0x3e;
-export const kExprMemorySize = 0x3f;
-export const kExprGrowMemory = 0x40;
-export const kExprI32Eqz = 0x45;
-export const kExprI32Eq = 0x46;
-export const kExprI32Ne = 0x47;
-export const kExprI32LtS = 0x48;
-export const kExprI32LtU = 0x49;
-export const kExprI32GtS = 0x4a;
-export const kExprI32GtU = 0x4b;
-export const kExprI32LeS = 0x4c;
-export const kExprI32LeU = 0x4d;
-export const kExprI32GeS = 0x4e;
-export const kExprI32GeU = 0x4f;
-export const kExprI64Eqz = 0x50;
-export const kExprI64Eq = 0x51;
-export const kExprI64Ne = 0x52;
-export const kExprI64LtS = 0x53;
-export const kExprI64LtU = 0x54;
-export const kExprI64GtS = 0x55;
-export const kExprI64GtU = 0x56;
-export const kExprI64LeS = 0x57;
-export const kExprI64LeU = 0x58;
-export const kExprI64GeS = 0x59;
-export const kExprI64GeU = 0x5a;
-export const kExprF32Eq = 0x5b;
-export const kExprF32Ne = 0x5c;
-export const kExprF32Lt = 0x5d;
-export const kExprF32Gt = 0x5e;
-export const kExprF32Le = 0x5f;
-export const kExprF32Ge = 0x60;
-export const kExprF64Eq = 0x61;
-export const kExprF64Ne = 0x62;
-export const kExprF64Lt = 0x63;
-export const kExprF64Gt = 0x64;
-export const kExprF64Le = 0x65;
-export const kExprF64Ge = 0x66;
-export const kExprRefIsNull = 0xd1;
-export const kExprI32Clz = 0x67;
-export const kExprI32Ctz = 0x68;
-export const kExprI32Popcnt = 0x69;
-export const kExprI32Add = 0x6a;
-export const kExprI32Sub = 0x6b;
-export const kExprI32Mul = 0x6c;
-export const kExprI32DivS = 0x6d;
-export const kExprI32DivU = 0x6e;
-export const kExprI32RemS = 0x6f;
-export const kExprI32RemU = 0x70;
-export const kExprI32And = 0x71;
-export const kExprI32Ior = 0x72;
-export const kExprI32Xor = 0x73;
-export const kExprI32Shl = 0x74;
-export const kExprI32ShrS = 0x75;
-export const kExprI32ShrU = 0x76;
-export const kExprI32Rol = 0x77;
-export const kExprI32Ror = 0x78;
-export const kExprI64Clz = 0x79;
-export const kExprI64Ctz = 0x7a;
-export const kExprI64Popcnt = 0x7b;
-export const kExprI64Add = 0x7c;
-export const kExprI64Sub = 0x7d;
-export const kExprI64Mul = 0x7e;
-export const kExprI64DivS = 0x7f;
-export const kExprI64DivU = 0x80;
-export const kExprI64RemS = 0x81;
-export const kExprI64RemU = 0x82;
-export const kExprI64And = 0x83;
-export const kExprI64Ior = 0x84;
-export const kExprI64Xor = 0x85;
-export const kExprI64Shl = 0x86;
-export const kExprI64ShrS = 0x87;
-export const kExprI64ShrU = 0x88;
-export const kExprI64Rol = 0x89;
-export const kExprI64Ror = 0x8a;
-export const kExprF32Abs = 0x8b;
-export const kExprF32Neg = 0x8c;
-export const kExprF32Ceil = 0x8d;
-export const kExprF32Floor = 0x8e;
-export const kExprF32Trunc = 0x8f;
-export const kExprF32NearestInt = 0x90;
-export const kExprF32Sqrt = 0x91;
-export const kExprF32Add = 0x92;
-export const kExprF32Sub = 0x93;
-export const kExprF32Mul = 0x94;
-export const kExprF32Div = 0x95;
-export const kExprF32Min = 0x96;
-export const kExprF32Max = 0x97;
-export const kExprF32CopySign = 0x98;
-export const kExprF64Abs = 0x99;
-export const kExprF64Neg = 0x9a;
-export const kExprF64Ceil = 0x9b;
-export const kExprF64Floor = 0x9c;
-export const kExprF64Trunc = 0x9d;
-export const kExprF64NearestInt = 0x9e;
-export const kExprF64Sqrt = 0x9f;
-export const kExprF64Add = 0xa0;
-export const kExprF64Sub = 0xa1;
-export const kExprF64Mul = 0xa2;
-export const kExprF64Div = 0xa3;
-export const kExprF64Min = 0xa4;
-export const kExprF64Max = 0xa5;
-export const kExprF64CopySign = 0xa6;
-export const kExprI32ConvertI64 = 0xa7;
-export const kExprI32SConvertF32 = 0xa8;
-export const kExprI32UConvertF32 = 0xa9;
-export const kExprI32SConvertF64 = 0xaa;
-export const kExprI32UConvertF64 = 0xab;
-export const kExprI64SConvertI32 = 0xac;
-export const kExprI64UConvertI32 = 0xad;
-export const kExprI64SConvertF32 = 0xae;
-export const kExprI64UConvertF32 = 0xaf;
-export const kExprI64SConvertF64 = 0xb0;
-export const kExprI64UConvertF64 = 0xb1;
-export const kExprF32SConvertI32 = 0xb2;
-export const kExprF32UConvertI32 = 0xb3;
-export const kExprF32SConvertI64 = 0xb4;
-export const kExprF32UConvertI64 = 0xb5;
-export const kExprF32ConvertF64 = 0xb6;
-export const kExprF64SConvertI32 = 0xb7;
-export const kExprF64UConvertI32 = 0xb8;
-export const kExprF64SConvertI64 = 0xb9;
-export const kExprF64UConvertI64 = 0xba;
-export const kExprF64ConvertF32 = 0xbb;
-export const kExprI32ReinterpretF32 = 0xbc;
-export const kExprI64ReinterpretF64 = 0xbd;
-export const kExprF32ReinterpretI32 = 0xbe;
-export const kExprF64ReinterpretI64 = 0xbf;
+export enum Opcode {
+    kUnreachable = 0x00,
+    kNop = 0x01,
+    kBlock = 0x02,
+    kLoop = 0x03,
+    kIf = 0x04,
+    kElse = 0x05,
+    kTry = 0x06,
+    kCatch = 0x07,
+    kThrow = 0x08,
+    kEnd = 0x0b,
+    kBr = 0x0c,
+    kBrIf = 0x0d,
+    kBrTable = 0x0e,
+    kReturn = 0x0f,
+    kCallFunction = 0x10,
+    kCallIndirect = 0x11,
+    kDrop = 0x1a,
+    kSelect = 0x1b,
+    kGetLocal = 0x20,
+    kSetLocal = 0x21,
+    kTeeLocal = 0x22,
+    kGetGlobal = 0x23,
+    kSetGlobal = 0x24,
+    kI32Const = 0x41,
+    kI64Const = 0x42,
+    kF32Const = 0x43,
+    kF64Const = 0x44,
+    kRefNull = 0xd0,
+    kI32LoadMem = 0x28,
+    kI64LoadMem = 0x29,
+    kF32LoadMem = 0x2a,
+    kF64LoadMem = 0x2b,
+    kI32LoadMem8S = 0x2c,
+    kI32LoadMem8U = 0x2d,
+    kI32LoadMem16S = 0x2e,
+    kI32LoadMem16U = 0x2f,
+    kI64LoadMem8S = 0x30,
+    kI64LoadMem8U = 0x31,
+    kI64LoadMem16S = 0x32,
+    kI64LoadMem16U = 0x33,
+    kI64LoadMem32S = 0x34,
+    kI64LoadMem32U = 0x35,
+    kI32StoreMem = 0x36,
+    kI64StoreMem = 0x37,
+    kF32StoreMem = 0x38,
+    kF64StoreMem = 0x39,
+    kI32StoreMem8 = 0x3a,
+    kI32StoreMem16 = 0x3b,
+    kI64StoreMem8 = 0x3c,
+    kI64StoreMem16 = 0x3d,
+    kI64StoreMem32 = 0x3e,
+    kMemorySize = 0x3f,
+    kGrowMemory = 0x40,
+    kI32Eqz = 0x45,
+    kI32Eq = 0x46,
+    kI32Ne = 0x47,
+    kI32LtS = 0x48,
+    kI32LtU = 0x49,
+    kI32GtS = 0x4a,
+    kI32GtU = 0x4b,
+    kI32LeS = 0x4c,
+    kI32LeU = 0x4d,
+    kI32GeS = 0x4e,
+    kI32GeU = 0x4f,
+    kI64Eqz = 0x50,
+    kI64Eq = 0x51,
+    kI64Ne = 0x52,
+    kI64LtS = 0x53,
+    kI64LtU = 0x54,
+    kI64GtS = 0x55,
+    kI64GtU = 0x56,
+    kI64LeS = 0x57,
+    kI64LeU = 0x58,
+    kI64GeS = 0x59,
+    kI64GeU = 0x5a,
+    kF32Eq = 0x5b,
+    kF32Ne = 0x5c,
+    kF32Lt = 0x5d,
+    kF32Gt = 0x5e,
+    kF32Le = 0x5f,
+    kF32Ge = 0x60,
+    kF64Eq = 0x61,
+    kF64Ne = 0x62,
+    kF64Lt = 0x63,
+    kF64Gt = 0x64,
+    kF64Le = 0x65,
+    kF64Ge = 0x66,
+    kRefIsNull = 0xd1,
+    kI32Clz = 0x67,
+    kI32Ctz = 0x68,
+    kI32Popcnt = 0x69,
+    kI32Add = 0x6a,
+    kI32Sub = 0x6b,
+    kI32Mul = 0x6c,
+    kI32DivS = 0x6d,
+    kI32DivU = 0x6e,
+    kI32RemS = 0x6f,
+    kI32RemU = 0x70,
+    kI32And = 0x71,
+    kI32Ior = 0x72,
+    kI32Xor = 0x73,
+    kI32Shl = 0x74,
+    kI32ShrS = 0x75,
+    kI32ShrU = 0x76,
+    kI32Rol = 0x77,
+    kI32Ror = 0x78,
+    kI64Clz = 0x79,
+    kI64Ctz = 0x7a,
+    kI64Popcnt = 0x7b,
+    kI64Add = 0x7c,
+    kI64Sub = 0x7d,
+    kI64Mul = 0x7e,
+    kI64DivS = 0x7f,
+    kI64DivU = 0x80,
+    kI64RemS = 0x81,
+    kI64RemU = 0x82,
+    kI64And = 0x83,
+    kI64Ior = 0x84,
+    kI64Xor = 0x85,
+    kI64Shl = 0x86,
+    kI64ShrS = 0x87,
+    kI64ShrU = 0x88,
+    kI64Rol = 0x89,
+    kI64Ror = 0x8a,
+    kF32Abs = 0x8b,
+    kF32Neg = 0x8c,
+    kF32Ceil = 0x8d,
+    kF32Floor = 0x8e,
+    kF32Trunc = 0x8f,
+    kF32NearestInt = 0x90,
+    kF32Sqrt = 0x91,
+    kF32Add = 0x92,
+    kF32Sub = 0x93,
+    kF32Mul = 0x94,
+    kF32Div = 0x95,
+    kF32Min = 0x96,
+    kF32Max = 0x97,
+    kF32CopySign = 0x98,
+    kF64Abs = 0x99,
+    kF64Neg = 0x9a,
+    kF64Ceil = 0x9b,
+    kF64Floor = 0x9c,
+    kF64Trunc = 0x9d,
+    kF64NearestInt = 0x9e,
+    kF64Sqrt = 0x9f,
+    kF64Add = 0xa0,
+    kF64Sub = 0xa1,
+    kF64Mul = 0xa2,
+    kF64Div = 0xa3,
+    kF64Min = 0xa4,
+    kF64Max = 0xa5,
+    kF64CopySign = 0xa6,
+    kI32ConvertI64 = 0xa7,
+    kI32SConvertF32 = 0xa8,
+    kI32UConvertF32 = 0xa9,
+    kI32SConvertF64 = 0xaa,
+    kI32UConvertF64 = 0xab,
+    kI64SConvertI32 = 0xac,
+    kI64UConvertI32 = 0xad,
+    kI64SConvertF32 = 0xae,
+    kI64UConvertF32 = 0xaf,
+    kI64SConvertF64 = 0xb0,
+    kI64UConvertF64 = 0xb1,
+    kF32SConvertI32 = 0xb2,
+    kF32UConvertI32 = 0xb3,
+    kF32SConvertI64 = 0xb4,
+    kF32UConvertI64 = 0xb5,
+    kF32ConvertF64 = 0xb6,
+    kF64SConvertI32 = 0xb7,
+    kF64UConvertI32 = 0xb8,
+    kF64SConvertI64 = 0xb9,
+    kF64UConvertI64 = 0xba,
+    kF64ConvertF32 = 0xbb,
+    kI32ReinterpretF32 = 0xbc,
+    kI64ReinterpretF64 = 0xbd,
+    kF32ReinterpretI32 = 0xbe,
+    kF64ReinterpretI64 = 0xbf,
+    kAtomicPrefix = 0xfe,
+}
 
 // Prefix opcodes
-export const kAtomicPrefix = 0xfe;
-
-export const kExprI32AtomicLoad = 0x10;
-export const kExprI32AtomicLoad8U = 0x12;
-export const kExprI32AtomicLoad16U = 0x13;
-export const kExprI32AtomicStore = 0x17;
-export const kExprI32AtomicStore8U = 0x19;
-export const kExprI32AtomicStore16U = 0x1a;
-export const kExprI32AtomicAdd = 0x1e;
-export const kExprI32AtomicAdd8U = 0x20;
-export const kExprI32AtomicAdd16U = 0x21;
-export const kExprI32AtomicSub = 0x25;
-export const kExprI32AtomicSub8U = 0x27;
-export const kExprI32AtomicSub16U = 0x28;
-export const kExprI32AtomicAnd = 0x2c;
-export const kExprI32AtomicAnd8U = 0x2e;
-export const kExprI32AtomicAnd16U = 0x2f;
-export const kExprI32AtomicOr = 0x33;
-export const kExprI32AtomicOr8U = 0x35;
-export const kExprI32AtomicOr16U = 0x36;
-export const kExprI32AtomicXor = 0x3a;
-export const kExprI32AtomicXor8U = 0x3c;
-export const kExprI32AtomicXor16U = 0x3d;
-export const kExprI32AtomicExchange = 0x41;
-export const kExprI32AtomicExchange8U = 0x43;
-export const kExprI32AtomicExchange16U = 0x44;
-export const kExprI32AtomicCompareExchange = 0x48;
-export const kExprI32AtomicCompareExchange8U = 0x4a;
-export const kExprI32AtomicCompareExchange16U = 0x4b;
+export enum AtomicOpcode {
+    kI32AtomicLoad = 0x10,
+    kI32AtomicLoad8U = 0x12,
+    kI32AtomicLoad16U = 0x13,
+    kI32AtomicStore = 0x17,
+    kI32AtomicStore8U = 0x19,
+    kI32AtomicStore16U = 0x1a,
+    kI32AtomicAdd = 0x1e,
+    kI32AtomicAdd8U = 0x20,
+    kI32AtomicAdd16U = 0x21,
+    kI32AtomicSub = 0x25,
+    kI32AtomicSub8U = 0x27,
+    kI32AtomicSub16U = 0x28,
+    kI32AtomicAnd = 0x2c,
+    kI32AtomicAnd8U = 0x2e,
+    kI32AtomicAnd16U = 0x2f,
+    kI32AtomicOr = 0x33,
+    kI32AtomicOr8U = 0x35,
+    kI32AtomicOr16U = 0x36,
+    kI32AtomicXor = 0x3a,
+    kI32AtomicXor8U = 0x3c,
+    kI32AtomicXor16U = 0x3d,
+    kI32AtomicExchange = 0x41,
+    kI32AtomicExchange8U = 0x43,
+    kI32AtomicExchange16U = 0x44,
+    kI32AtomicCompareExchange = 0x48,
+    kI32AtomicCompareExchange8U = 0x4a,
+    kI32AtomicCompareExchange16U = 0x4b,
+}
 
 export const kTrapUnreachable = 0;
 export const kTrapMemOutOfBounds = 1;
@@ -396,7 +391,7 @@ export const kTrapTypeError = 8;
 
 
 function wasmI32Const(val : number) {
-    const bytes = [kExprI32Const];
+    const bytes = [Opcode.kI32Const];
     for (let i = 0; i < 4; ++i) {
         bytes.push(0x80 | ((val >> (7 * i)) & 0x7f));
     }
@@ -405,12 +400,12 @@ function wasmI32Const(val : number) {
 }
 
 function wasmF32Const(f : number) {
-    return [kExprF32Const].concat(
+    return [Opcode.kF32Const].concat(
         Array.from(new Uint8Array((new Float32Array([f])).buffer)));
 }
 
 function wasmF64Const(f : number) {
-    return [kExprF64Const].concat(
+    return [Opcode.kF64Const].concat(
         Array.from(new Uint8Array((new Float64Array([f])).buffer)));
 }
 
@@ -554,7 +549,7 @@ export class FunctionBuilder {
         }
         this.body = body.slice();
         // Automatically add the end for the function block to the body.
-        this.body.push(kExprEnd);
+        this.body.push(Opcode.kEnd);
         return this;
     }
 
@@ -845,7 +840,7 @@ export class ModuleBuilder {
         // Add type section
         if (wasm.types.length > 0) {
             if (debug) console.info("emitting types @ " + binary.bytes.length);
-            binary.emit_section(kTypeSectionCode, (section) => {
+            binary.emit_section(SectionCode.kType, (section) => {
                 section.emit_u32v(wasm.types.length);
                 for (const type of wasm.types) {
                     section.emit_u8(kWasmFunctionTypeForm);
@@ -866,7 +861,7 @@ export class ModuleBuilder {
             if (debug) {
                 console.info("emitting imports @ " + binary.bytes.length);
             }
-            binary.emit_section(kImportSectionCode, (section) => {
+            binary.emit_section(SectionCode.kImport, (section) => {
                 section.emit_u32v(wasm.imports.length);
                 for (const imp of wasm.imports) {
                     section.emit_string(imp.module);
@@ -911,7 +906,7 @@ export class ModuleBuilder {
                 console.info(
                     "emitting function decls @ " + binary.bytes.length);
             }
-            binary.emit_section(kFunctionSectionCode, (section) => {
+            binary.emit_section(SectionCode.kFunction, (section) => {
                 section.emit_u32v(wasm.functions.length);
                 for (const func of wasm.functions) {
                     section.emit_u32v(func.type_index);
@@ -922,7 +917,7 @@ export class ModuleBuilder {
         // Add function_table.
         if (wasm.function_table_length_min > 0) {
             if (debug) console.info("emitting table @ " + binary.bytes.length);
-            binary.emit_section(kTableSectionCode, (section) => {
+            binary.emit_section(SectionCode.kTable, (section) => {
                 section.emit_u8(1);  // one table entry
                 section.emit_u8(kWasmAnyFunctionTypeForm);
                 // TODO(gdeepti): Cleanup to use optional max flag,
@@ -937,7 +932,7 @@ export class ModuleBuilder {
         const memory = wasm.memory;
         if (memory !== undefined) {
             if (debug) console.info("emitting memory @ " + binary.bytes.length);
-            binary.emit_section(kMemorySectionCode, (section) => {
+            binary.emit_section(SectionCode.kMemory, (section) => {
                 section.emit_u8(1);  // one memory entry
                 const has_max = memory.max !== undefined;
                 const is_shared = memory.shared !== undefined;
@@ -955,7 +950,7 @@ export class ModuleBuilder {
         //   // Add global section.
         //   if (wasm.globals.length > 0) {
         //     if (debug) print ("emitting globals @ " + binary.length);
-        //     binary.emit_section(kGlobalSectionCode, section => {
+        //     binary.emit_section(SectionCode.kGlobal, section => {
         //       section.emit_u32v(wasm.globals.length);
         //       for (let global of wasm.globals) {
         //         section.emit_u8(global.type);
@@ -964,15 +959,15 @@ export class ModuleBuilder {
         //           // Emit a constant initializer.
         //           switch (global.type) {
         //           case kWasmI32:
-        //             section.emit_u8(kExprI32Const);
+        //             section.emit_u8(Opcode.kI32Const);
         //             section.emit_u32v(global.init);
         //             break;
         //           case kWasmI64:
-        //             section.emit_u8(kExprI64Const);
+        //             section.emit_u8(Opcode.kI64Const);
         //             section.emit_u32v(global.init);
         //             break;
         //           case kWasmF32:
-        //             section.emit_u8(kExprF32Const);
+        //             section.emit_u8(Opcode.kF32Const);
         //             f32_view[0] = global.init;
         //             section.emit_u8(byte_view[0]);
         //             section.emit_u8(byte_view[1]);
@@ -980,7 +975,7 @@ export class ModuleBuilder {
         //             section.emit_u8(byte_view[3]);
         //             break;
         //           case kWasmF64:
-        //             section.emit_u8(kExprF64Const);
+        //             section.emit_u8(Opcode.kF64Const);
         //             f64_view[0] = global.init;
         //             section.emit_u8(byte_view[0]);
         //             section.emit_u8(byte_view[1]);
@@ -994,10 +989,10 @@ export class ModuleBuilder {
         //           }
         //         } else {
         //           // Emit a global-index initializer.
-        //           section.emit_u8(kExprGetGlobal);
+        //           section.emit_u8(Opcode.kGetGlobal);
         //           section.emit_u32v(global.init_index);
         //         }
-        //         section.emit_u8(kExprEnd);  // end of init expression
+        //         section.emit_u8(Opcode.kEnd);  // end of init expression
         //       }
         //     });
         //   }
@@ -1007,7 +1002,7 @@ export class ModuleBuilder {
         const exports_count = wasm.exports.length + (mem_export ? 1 : 0);
         if (exports_count > 0) {
             if (debug) console.log("emitting exports @ " + binary.bytes.length);
-            binary.emit_section(kExportSectionCode, (section) => {
+            binary.emit_section(SectionCode.kExport, (section) => {
                 section.emit_u32v(exports_count);
                 for (const exp of wasm.exports) {
                     section.emit_string(exp.name);
@@ -1028,7 +1023,7 @@ export class ModuleBuilder {
                 console.info(
                     "emitting start function @ " + binary.bytes.length);
             }
-            binary.emit_section(kStartSectionCode, (section) => {
+            binary.emit_section(SectionCode.kStart, (section) => {
                 section.emit_u32v(wasm.start_index);
             });
         }
@@ -1036,19 +1031,19 @@ export class ModuleBuilder {
         // Add table elements.
         if (wasm.function_table_inits.length > 0) {
             if (debug) console.info("emitting table @ " + binary.bytes.length);
-            binary.emit_section(kElementSectionCode, (section) => {
+            binary.emit_section(SectionCode.kElement, (section) => {
                 const inits = wasm.function_table_inits;
                 section.emit_u32v(inits.length);
 
                 for (const init of inits) {
                     section.emit_u8(0); // table index
                     if (init.is_global) {
-                        section.emit_u8(kExprGetGlobal);
+                        section.emit_u8(Opcode.kGetGlobal);
                     } else {
-                        section.emit_u8(kExprI32Const);
+                        section.emit_u8(Opcode.kI32Const);
                     }
                     section.emit_u32v(init.base);
-                    section.emit_u8(kExprEnd);
+                    section.emit_u8(Opcode.kEnd);
                     section.emit_u32v(init.array.length);
                     for (const index of init.array) {
                         section.emit_u32v(index);
@@ -1062,7 +1057,7 @@ export class ModuleBuilder {
             if (debug) {
                 console.info("emitting exceptions @ " + binary.bytes.length);
             }
-            binary.emit_section(kExceptionSectionCode, (section) => {
+            binary.emit_section(SectionCode.kException, (section) => {
                 section.emit_u32v(wasm.exceptions.length);
                 for (const type of wasm.exceptions) {
                     section.emit_u32v(type.params.length);
@@ -1077,7 +1072,7 @@ export class ModuleBuilder {
         if (wasm.functions.length > 0) {
             // emit function bodies
             if (debug) console.info("emitting code @ " + binary.bytes.length);
-            binary.emit_section(kCodeSectionCode, (section) => {
+            binary.emit_section(SectionCode.kCode, (section) => {
                 section.emit_u32v(wasm.functions.length);
                 for (const func of wasm.functions) {
                     // Function body length will be patched later.
@@ -1125,20 +1120,20 @@ export class ModuleBuilder {
                 console.info(
                     "emitting data segments @ " + binary.bytes.length);
             }
-            binary.emit_section(kDataSectionCode, (section) => {
+            binary.emit_section(SectionCode.kData, (section) => {
                 section.emit_u32v(wasm.segments.length);
                 for (const seg of wasm.segments) {
                     section.emit_u8(0);  // linear memory index 0
                     if (seg.is_global) {
                         // initializer is a global variable
-                        section.emit_u8(kExprGetGlobal);
+                        section.emit_u8(Opcode.kGetGlobal);
                         section.emit_u32v(seg.addr);
                     } else {
                         // initializer is a constant
-                        section.emit_u8(kExprI32Const);
+                        section.emit_u8(Opcode.kI32Const);
                         section.emit_u32v(seg.addr);
                     }
-                    section.emit_u8(kExprEnd);
+                    section.emit_u8(Opcode.kEnd);
                     section.emit_u32v(seg.data.length);
                     section.emit_bytes(seg.data);
                 }
@@ -1165,28 +1160,29 @@ export class ModuleBuilder {
             if (debug) {
                 console.info("emitting names @ " + binary.bytes.length);
             }
-            binary.emit_section(kUnknownSectionCode, (section) => {
+            binary.emit_section(SectionCode.kUnknown, (section) => {
                 section.emit_string("name");
                 // Emit module name.
                 if (wasm.name !== undefined) {
-                    section.emit_section(kModuleNameCode, (name_section) => {
+                    section.emit_section(NameCode.kModule, (name_section) => {
                         name_section.emit_string(wasm.name);
                     });
                 }
                 // Emit function names.
                 if (num_function_names > 0) {
-                    section.emit_section(kFunctionNamesCode, (name_section) => {
-                        name_section.emit_u32v(num_function_names);
-                        for (const func of wasm.functions) {
-                            if (func.name === undefined) continue;
-                            name_section.emit_u32v(func.index);
-                            name_section.emit_string(func.name);
-                        }
+                    section.emit_section(NameCode.kFunctions,
+                        (name_section) => {
+                            name_section.emit_u32v(num_function_names);
+                            for (const func of wasm.functions) {
+                                if (func.name === undefined) continue;
+                                name_section.emit_u32v(func.index);
+                                name_section.emit_string(func.name);
+                            }
                     });
                 }
                 // Emit local names.
                 if (num_functions_with_local_names > 0) {
-                    section.emit_section(kLocalNamesCode, (name_section) => {
+                    section.emit_section(NameCode.kLocals, (name_section) => {
                         name_section.emit_u32v(num_functions_with_local_names);
                         for (const func of wasm.functions) {
                             if (func.numLocalNames() === 0) continue;
