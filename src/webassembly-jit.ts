@@ -2,17 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function bytesBuffer() {
-    const buffer = new ArrayBuffer(arguments.length);
-    const view = new Uint8Array(buffer);
-    for (let i = 0; i < arguments.length; i++) {
-        let val = arguments[i];
-        if ((typeof val) === "string") val = val.charCodeAt(0);
-        view[i] = val | 0;
-    }
-    return buffer;
-}
-
 // V8 internal constants
 export const kV8MaxPages = 32767;
 
@@ -143,7 +132,7 @@ export interface ISignature {
     results : Type[];
 }
 
-function makeSig(params : Type[], results : Type[]) : ISignature {
+export function makeSig(params : Type[], results : Type[]) : ISignature {
     return { params : params, results : results };
 }
 
