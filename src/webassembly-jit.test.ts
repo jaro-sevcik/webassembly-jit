@@ -1,4 +1,4 @@
-import * as Wasm from "./webassembly-jit" 
+import * as Wasm from "./webassembly-jit";
 
 test("run_get_constant", () => {
     const builder = new Wasm.ModuleBuilder();
