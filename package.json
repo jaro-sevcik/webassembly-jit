@@ -2,6 +2,10 @@
   "name": "webassembly-jit",
   "version": "1.0.0",
   "description": "Library for generating Webassembly on the fly.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jaro-sevcik/webassembly-jit.git"
+  },
   "main": "dist/webassembly-jit.js",
   "types": "dist/webassembly-jit.d.ts",
   "scripts": {
