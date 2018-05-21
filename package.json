@@ -1,0 +1,24 @@
+{
+  "name": "webassembly-jit",
+  "version": "1.0.0",
+  "description": "Library for generating Webassembly on the fly.",
+  "main": "dist/webassembly-jit.js",
+  "types": "dist/webassembly-jit.d.ts",
+  "scripts": {
+    "prepublish": "npm run build",
+    "build": "tsc",
+    "test": "jest"
+  },
+  "author": "jarin@chromium.org",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "@types/webassembly-js-api": "0.0.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^22.2.3",
+    "jest": "^22.4.4",
+    "ts-jest": "^22.4.6",
+    "ts-lint": "^4.5.1",
+    "typescript": "^2.8.3"
+  }
+}
