@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function bytes() {
-    var buffer = new ArrayBuffer(arguments.length);
-    var view = new Uint8Array(buffer);
-    for (var i = 0; i < arguments.length; i++) {
-        var val = arguments[i];
-        if ((typeof val) == "string") val = val.charCodeAt(0);
+function bytesBuffer() {
+    const buffer = new ArrayBuffer(arguments.length);
+    const view = new Uint8Array(buffer);
+    for (let i = 0; i < arguments.length; i++) {
+        let val = arguments[i];
+        if ((typeof val) === "string") val = val.charCodeAt(0);
         view[i] = val | 0;
     }
     return buffer;
@@ -31,9 +31,9 @@ export const kHeaderSize = 8;
 export const kPageSize = 65536;
 export const kSpecMaxPages = 65535;
 
-function bytesWithHeader(): ArrayBuffer {
-    var buffer = new ArrayBuffer(kHeaderSize + arguments.length);
-    var view = new Uint8Array(buffer);
+function bytesWithHeader() : ArrayBuffer {
+    const buffer = new ArrayBuffer(kHeaderSize + arguments.length);
+    const view = new Uint8Array(buffer);
     view[0] = kWasmH0;
     view[1] = kWasmH1;
     view[2] = kWasmH2;
@@ -42,9 +42,9 @@ function bytesWithHeader(): ArrayBuffer {
     view[5] = kWasmV1;
     view[6] = kWasmV2;
     view[7] = kWasmV3;
-    for (var i = 0; i < arguments.length; i++) {
-        var val = arguments[i];
-        if ((typeof val) == "string") val = val.charCodeAt(0);
+    for (let i = 0; i < arguments.length; i++) {
+        let val = arguments[i];
+        if ((typeof val) === "string") val = val.charCodeAt(0);
         view[kHeaderSize + i] = val | 0;
     }
     return buffer;
@@ -57,7 +57,8 @@ export const kUnknownSectionCode = 0;
 export const kTypeSectionCode = 1;        // Function signature declarations
 export const kImportSectionCode = 2;      // Import declarations
 export const kFunctionSectionCode = 3;    // Function declarations
-export const kTableSectionCode = 4;       // Indirect function table and other tables
+export const kTableSectionCode = 4;       // Indirect function table
+                                          // and other tables
 export const kMemorySectionCode = 5;      // Memory attributes
 export const kGlobalSectionCode = 6;      // Global declarations
 export const kExportSectionCode = 7;      // Exports
@@ -66,7 +67,8 @@ export const kElementSectionCode = 9;     // Elements section
 export const kCodeSectionCode = 10;       // Function code
 export const kDataSectionCode = 11;       // Data segments
 export const kNameSectionCode = 12;       // Name section (encoded as string)
-export const kExceptionSectionCode = 13;  // Exception section (must appear before code section)
+export const kExceptionSectionCode = 13;  // Exception section (must appear
+                                          // before code section)
 
 // Name section types
 export const kModuleNameCode = 0;
@@ -108,7 +110,8 @@ export const kSig_i_i = makeSig([Type.kI32], [Type.kI32]);
 export const kSig_l_l = makeSig([Type.kI64], [Type.kI64]);
 export const kSig_i_l = makeSig([Type.kI64], [Type.kI32]);
 export const kSig_i_ii = makeSig([Type.kI32, Type.kI32], [Type.kI32]);
-export const kSig_i_iii = makeSig([Type.kI32, Type.kI32, Type.kI32], [Type.kI32]);
+export const kSig_i_iii = makeSig(
+    [Type.kI32, Type.kI32, Type.kI32], [Type.kI32]);
 export const kSig_d_dd = makeSig([Type.kF64, Type.kF64], [Type.kF64]);
 export const kSig_l_ll = makeSig([Type.kI64, Type.kI64], [Type.kI64]);
 export const kSig_i_dd = makeSig([Type.kF64, Type.kF64], [Type.kI32]);
@@ -127,9 +130,12 @@ export const kSig_v_ddi = makeSig([Type.kF64, Type.kF64, Type.kI32], []);
 export const kSig_ii_v = makeSig([], [Type.kI32, Type.kI32]);
 export const kSig_iii_v = makeSig([], [Type.kI32, Type.kI32, Type.kI32]);
 export const kSig_ii_i = makeSig([Type.kI32], [Type.kI32, Type.kI32]);
-export const kSig_iii_i = makeSig([Type.kI32], [Type.kI32, Type.kI32, Type.kI32]);
-export const kSig_ii_ii = makeSig([Type.kI32, Type.kI32], [Type.kI32, Type.kI32]);
-export const kSig_iii_ii = makeSig([Type.kI32, Type.kI32], [Type.kI32, Type.kI32, Type.kI32]);
+export const kSig_iii_i = makeSig(
+    [Type.kI32], [Type.kI32, Type.kI32, Type.kI32]);
+export const kSig_ii_ii = makeSig(
+    [Type.kI32, Type.kI32], [Type.kI32, Type.kI32]);
+export const kSig_iii_ii = makeSig(
+    [Type.kI32, Type.kI32], [Type.kI32, Type.kI32, Type.kI32]);
 
 export const kSig_v_f = makeSig([Type.kF32], []);
 export const kSig_f_f = makeSig([Type.kF32], [Type.kF32]);
@@ -139,32 +145,32 @@ export const kSig_i_r = makeSig([Type.kAnyRef], [Type.kI32]);
 export const kSig_v_r = makeSig([Type.kAnyRef], []);
 export const kSig_r_v = makeSig([], [Type.kAnyRef]);
 
-export interface Signature {
-    params: Type[];
-    results: Type[];
+export interface ISignature {
+    params : Type[];
+    results : Type[];
 }
 
-function makeSig(params: Type[], results: Type[]): Signature {
-    return { params: params, results: results };
+function makeSig(params : Type[], results : Type[]) : ISignature {
+    return { params : params, results : results };
 }
 
-function makeSig_v_x(x: Type): Signature {
+function makeSig_v_x(x : Type) : ISignature {
     return makeSig([x], []);
 }
 
-function makeSig_v_xx(x: Type): Signature {
+function makeSig_v_xx(x : Type) : ISignature {
     return makeSig([x, x], []);
 }
 
-function makeSig_r_v(r: Type): Signature {
+function makeSig_r_v(r : Type) : ISignature {
     return makeSig([], [r]);
 }
 
-function makeSig_r_x(r: Type, x: Type): Signature {
+function makeSig_r_x(r : Type, x : Type) : ISignature {
     return makeSig([x], [r]);
 }
 
-function makeSig_r_xx(r: Type, x: Type): Signature {
+function makeSig_r_xx(r : Type, x : Type) : ISignature {
     return makeSig([x, x], [r]);
 }
 
@@ -374,9 +380,9 @@ export const kExprI32AtomicXor16U = 0x3d;
 export const kExprI32AtomicExchange = 0x41;
 export const kExprI32AtomicExchange8U = 0x43;
 export const kExprI32AtomicExchange16U = 0x44;
-export const kExprI32AtomicCompareExchange = 0x48
-export const kExprI32AtomicCompareExchange8U = 0x4a
-export const kExprI32AtomicCompareExchange16U = 0x4b
+export const kExprI32AtomicCompareExchange = 0x48;
+export const kExprI32AtomicCompareExchange8U = 0x4a;
+export const kExprI32AtomicCompareExchange16U = 0x4b;
 
 export const kTrapUnreachable = 0;
 export const kTrapMemOutOfBounds = 1;
@@ -389,8 +395,8 @@ export const kTrapFuncSigMismatch = 7;
 export const kTrapTypeError = 8;
 
 
-function wasmI32Const(val: number) {
-    let bytes = [kExprI32Const];
+function wasmI32Const(val : number) {
+    const bytes = [kExprI32Const];
     for (let i = 0; i < 4; ++i) {
         bytes.push(0x80 | ((val >> (7 * i)) & 0x7f));
     }
@@ -398,48 +404,50 @@ function wasmI32Const(val: number) {
     return bytes;
 }
 
-function wasmF32Const(f: number) {
-    return [kExprF32Const].concat(Array.from(new Uint8Array((new Float32Array([f])).buffer)));
+function wasmF32Const(f : number) {
+    return [kExprF32Const].concat(
+        Array.from(new Uint8Array((new Float32Array([f])).buffer)));
 }
 
-function wasmF64Const(f: number) {
-    return [kExprF64Const].concat(Array.from(new Uint8Array((new Float64Array([f])).buffer)));
+function wasmF64Const(f : number) {
+    return [kExprF64Const].concat(
+        Array.from(new Uint8Array((new Float64Array([f])).buffer)));
 }
 
 // Used for encoding f32 and double constants to bits.
-let __buffer = new ArrayBuffer(8);
-let byte_view = new Int8Array(__buffer);
-let f32_view = new Float32Array(__buffer);
-let f64_view = new Float64Array(__buffer);
+const __buffer = new ArrayBuffer(8);
+const byte_view = new Int8Array(__buffer);
+const f32_view = new Float32Array(__buffer);
+const f64_view = new Float64Array(__buffer);
 
 export class Binary {
-    bytes: number[] = [];
+    bytes : number[] = [];
 
-    push(val: number) {
+    push(val : number) {
         this.bytes.push(val);
     }
 
-    emit_u8(val: number) {
+    emit_u8(val : number) {
         this.push(val);
     }
 
-    emit_u16(val: number) {
+    emit_u16(val : number) {
         this.push(val & 0xff);
         this.push((val >> 8) & 0xff);
     }
 
-    emit_u32(val: number) {
+    emit_u32(val : number) {
         this.push(val & 0xff);
         this.push((val >> 8) & 0xff);
         this.push((val >> 16) & 0xff);
         this.push((val >> 24) & 0xff);
     }
 
-    emit_u32v(val: number) {
+    emit_u32v(val : number) {
         while (true) {
-            let v = val & 0xff;
+            const v = val & 0xff;
             val = val >>> 7;
-            if (val == 0) {
+            if (val === 0) {
                 this.push(v);
                 break;
             }
@@ -447,13 +455,13 @@ export class Binary {
         }
     }
 
-    emit_bytes(data: number[]) {
-        for (let i = 0; i < data.length; i++) {
-            this.push(data[i] & 0xff);
+    emit_bytes(data : number[]) {
+        for (const v of data) {
+            this.push(v & 0xff);
         }
     }
 
-    emit_string(s: string | number[]) {
+    emit_string(s : string | number[]) {
         // When testing illegal names, we pass a byte array directly.
         if (s instanceof Array) {
             this.emit_u32v(s.length);
@@ -461,9 +469,9 @@ export class Binary {
             return;
         }
 
-        // This is the hacky way to convert a JavaScript string to a UTF8 encoded
-        // string only containing single-byte characters.
-        let string_utf8 = unescape(encodeURIComponent(s));
+        // This is the hacky way to convert a JavaScript string to
+        // a UTF8 encoded string only containing single-byte characters.
+        const string_utf8 = unescape(encodeURIComponent(s));
         this.emit_u32v(string_utf8.length);
         for (let i = 0; i < string_utf8.length; i++) {
             this.emit_u8(string_utf8.charCodeAt(i));
@@ -475,40 +483,41 @@ export class Binary {
             kWasmV0, kWasmV1, kWasmV2, kWasmV3]);
     }
 
-    emit_section(section_code: number,
-        content_generator: (b: Binary) => void) {
+    emit_section(section_code : number,
+                 content_generator : (b : Binary) => void) {
         // Emit section name.
         this.emit_u8(section_code);
-        // Emit the section to a temporary buffer: its full length isn't know yet.
-        let section = new Binary;
+        // Emit the section to a temporary buffer: its full length isn't
+        // known yet.
+        const section = new Binary();
         content_generator(section);
         // Emit section length.
         this.emit_u32v(section.bytes.length);
         // Copy the temporary buffer.
-        for (var i = 0; i < section.bytes.length; i++) {
-            this.push(section.bytes[i]);
+        for (const b of section.bytes) {
+            this.push(b);
         }
     }
 }
 
-export interface LocalsCounts {
-    i32_count: number;
-    i64_count: number;
-    f32_count: number;
-    f64_count: number;
-    s128_count: number;
+export interface ILocalsCounts {
+    i32_count : number;
+    i64_count : number;
+    f32_count : number;
+    f64_count : number;
+    s128_count : number;
 }
 
 export class FunctionBuilder {
-    module: any;
-    name: string;
-    type_index: number;
-    body: number[];
-    locals: LocalsCounts[];
-    local_names: string[];
-    index: number = -1;
+    module : any;
+    name : string;
+    type_index : number;
+    body : number[];
+    locals : ILocalsCounts[];
+    local_names : string[];
+    index : number = -1;
 
-    constructor(module: any, name: string, type_index: number) {
+    constructor(module : any, name : string, type_index : number) {
         this.module = module;
         this.name = name;
         this.type_index = type_index;
@@ -520,13 +529,13 @@ export class FunctionBuilder {
     numLocalNames() {
         if (this.local_names === undefined) return 0;
         let num_local_names = 0;
-        for (let loc_name of this.local_names) {
+        for (const loc_name of this.local_names) {
             if (loc_name !== undefined)++num_local_names;
         }
         return num_local_names;
     }
 
-    exportAs(name: string) {
+    exportAs(name : string) {
         this.module.addExport(name, this.index);
         return this;
     }
@@ -536,10 +545,12 @@ export class FunctionBuilder {
         return this;
     }
 
-    addBody(body: number[]) {
-        for (let b of body) {
-            if (typeof b !== 'number' || (b & (~0xFF)) !== 0)
-                throw new Error('invalid body (entries must be 8 bit numbers): ' + body);
+    addBody(body : number[]) {
+        for (const b of body) {
+            if (typeof b !== "number" || (b & (~0xFF)) !== 0) {
+                throw new Error(
+                    "invalid body (entries must be 8 bit numbers): " + body);
+            }
         }
         this.body = body.slice();
         // Automatically add the end for the function block to the body.
@@ -547,14 +558,14 @@ export class FunctionBuilder {
         return this;
     }
 
-    addBodyWithEnd(body: number[]) {
+    addBodyWithEnd(body : number[]) {
         this.body = body;
         return this;
     }
 
     getNumLocals() {
         let total_locals = 0;
-        for (let l of this.locals || []) {
+        for (const l of this.locals || []) {
             total_locals += l.i32_count;
             total_locals += l.i64_count;
             total_locals += l.f32_count;
@@ -564,9 +575,9 @@ export class FunctionBuilder {
         return total_locals;
     }
 
-    addLocals(locals: LocalsCounts, names: string[]) {
+    addLocals(locals : ILocalsCounts, names : string[]) {
         const old_num_locals = this.getNumLocals();
-        if (!this.locals) this.locals = []
+        if (!this.locals) this.locals = [];
         this.locals.push(locals);
         if (names) {
             if (!this.local_names) this.local_names = [];
@@ -597,60 +608,60 @@ export class FunctionBuilder {
 // }
 
 
-export interface Memory {
-    min: number;
-    max: number;
-    exp: boolean;
-    shared?: string;
+export interface IMemory {
+    min : number;
+    max : number;
+    exp : boolean;
+    shared? : string;
 }
 
-export interface ImportDef {
-    module: string;
-    name: string;
-    kind: number;
-    type?: number;
-    mutable?: boolean;
-    shared?: string;
-    maximum?: number;
-    initial?: number;
+export interface IImportDef {
+    module : string;
+    name : string;
+    kind : number;
+    type? : number;
+    mutable? : boolean;
+    shared? : string;
+    maximum? : number;
+    initial? : number;
 }
 
-export interface ExportDef {
-    name: string;
-    kind: number;
-    index: number;
+export interface IExportDef {
+    name : string;
+    kind : number;
+    index : number;
 }
 
-export interface Segment {
-    addr: number;
-    data: number[];
-    is_global: boolean;
+export interface ISegment {
+    addr : number;
+    data : number[];
+    is_global : boolean;
 }
 
-export interface FunctionTableInit {
-    base: number;
-    is_global: boolean;
-    array: number[];
+export interface IFunctionTableInit {
+    base : number;
+    is_global : boolean;
+    array : number[];
 }
 
 export class ModuleBuilder {
-    name: string = "";
-    start_index: number = -1;
-    types: Signature[] = [];
-    memory?: Memory;
-    explicit: number[][] = [];
-    exceptions: Signature[] = [];
-    functions: FunctionBuilder[] = [];
-    imports: ImportDef[] = [];
-    exports: ExportDef[] = [];
-    segments: Segment[] = [];
-    function_table_inits: FunctionTableInit[] = [];
+    name : string = "";
+    start_index : number = -1;
+    types : ISignature[] = [];
+    memory? : IMemory;
+    explicit : number[][] = [];
+    exceptions : ISignature[] = [];
+    functions : FunctionBuilder[] = [];
+    imports : IImportDef[] = [];
+    exports : IExportDef[] = [];
+    segments : ISegment[] = [];
+    function_table_inits : IFunctionTableInit[] = [];
 
-    function_table_length_min = 0;
-    function_table_length_max = 0;
+    function_table_length_min : number = 0;
+    function_table_length_max : number = 0;
 
-    num_imported_funcs: number = 0;
-    num_imported_globals: number = 0;
+    num_imported_funcs : number = 0;
+    num_imported_globals : number = 0;
 
     constructor() {
         // this.globals = [];
@@ -658,33 +669,33 @@ export class ModuleBuilder {
         return this;
     }
 
-    addStart(start_index: number) {
+    addStart(start_index : number) {
         this.start_index = start_index;
         return this;
     }
 
-    addMemory(min: number, max: number, exp: boolean, shared?: string) {
-        this.memory = { min: min, max: max, exp: exp, shared: shared };
+    addMemory(min : number, max : number, exp : boolean, shared? : string) {
+        this.memory = { min : min, max : max, exp : exp, shared : shared };
         return this;
     }
 
-    addExplicitSection(bytes: number[]) {
+    addExplicitSection(bytes : number[]) {
         this.explicit.push(bytes);
         return this;
     }
 
-    stringToBytes(name: string): Binary {
-        var result = new Binary();
+    stringToBytes(name : string) : Binary {
+        const result = new Binary();
         result.emit_u32v(name.length);
-        for (var i = 0; i < name.length; i++) {
+        for (let i = 0; i < name.length; i++) {
             result.emit_u8(name.charCodeAt(i));
         }
         return result;
     }
 
-    addCustomSection(name: string, bytes: number[]) {
+    addCustomSection(name : string, bytes : number[]) {
         const binaryName = this.stringToBytes(name);
-        var length = new Binary();
+        const length = new Binary();
         length.emit_u32v(name.length + bytes.length);
         this.explicit.push([
             0,
@@ -693,10 +704,10 @@ export class ModuleBuilder {
             ...bytes]);
     }
 
-    addType(type: Signature) {
+    addType(type : ISignature) {
         this.types.push(type);
-        var pl = type.params.length;  // should have params
-        var rl = type.results.length; // should have results
+        const pl = type.params.length;  // should have params
+        const rl = type.results.length; // should have results
         return this.types.length - 1;
     }
 
@@ -707,89 +718,92 @@ export class ModuleBuilder {
     //   return glob;
     // }
 
-    addException(type: Signature) {
-        if (type.results.length != 0)
-            throw new Error('Invalid exception signature: ' + type);
+    addException(type : ISignature) {
+        if (type.results.length !== 0) {
+            throw new Error("Invalid exception signature: " + type);
+        }
         this.exceptions.push(type);
         return this.exceptions.length - 1;
     }
 
-    addFunction(name: string, type: number | Signature) {
-        let type_index = (typeof type) == "number" ? 
-            type as number : this.addType(type as Signature);
-        let func = new FunctionBuilder(this, name, type_index);
+    addFunction(name : string, type : number | ISignature) {
+        const type_index = (typeof type) === "number" ?
+            type as number : this.addType(type as ISignature);
+        const func = new FunctionBuilder(this, name, type_index);
         func.index = this.functions.length + this.num_imported_funcs;
         this.functions.push(func);
         return func;
     }
 
-    addImport(module: string = "", name: string, type: number | Signature) {
-        let type_index = (typeof type) === "number" ?
-            type as number : this.addType(type as Signature);
+    addImport(module : string = "", name : string,
+              type : number | ISignature) {
+        const type_index = (typeof type) === "number" ?
+            type as number : this.addType(type as ISignature);
         this.imports.push({
-            module: module, name: name, kind: kExternalFunction,
-            type: type_index
+            module : module, name : name, kind : kExternalFunction,
+            type: type_index,
         });
         return this.num_imported_funcs++;
     }
 
-    addImportedGlobal(module: string = "", name: string,
-        type: number, mutable: boolean = false) {
-        let o = {
+    addImportedGlobal(module : string = "", name : string,
+                      type : number, mutable : boolean = false) {
+        const o = {
             module: module, name: name, kind: kExternalGlobal, type: type,
-            mutable: mutable
+            mutable: mutable,
         };
         this.imports.push(o);
         return this.num_imported_globals++;
     }
 
-    addImportedMemory(module: string = "", name: string,
-        initial: number = 0, maximum?: number,
-        shared?: string) {
-        let o = {
+    addImportedMemory(module : string = "", name : string,
+                      initial : number = 0, maximum? : number,
+                      shared? : string) {
+        const o = {
             module: module, name: name, kind: kExternalMemory,
-            initial: initial, maximum: maximum, shared: shared
+            initial: initial, maximum: maximum, shared: shared,
         };
         this.imports.push(o);
         return this;
     }
 
-    addImportedTable(module: string = "", name: string,
-        initial: number, maximum: number) {
-        let o = {
-            module: module, name: name, kind: kExternalTable, initial: initial,
-            maximum: maximum
+    addImportedTable(module : string = "", name : string,
+                     initial : number, maximum : number) {
+        const o = {
+            module : module, name : name, kind : kExternalTable,
+            initial: initial, maximum: maximum,
         };
         this.imports.push(o);
     }
 
-    addExport(name: string, index: number) {
-        this.exports.push({ name: name, kind: kExternalFunction, index: index });
+    addExport(name : string, index : number) {
+        this.exports.push(
+            { name : name, kind : kExternalFunction, index : index });
         return this;
     }
 
-    addExportOfKind(name: string, kind: number, index: number) {
+    addExportOfKind(name : string, kind : number, index : number) {
         this.exports.push({ name: name, kind: kind, index: index });
         return this;
     }
 
-    addDataSegment(addr: number, data: number[], is_global = false) {
+    addDataSegment(addr : number, data : number[], is_global = false) {
         this.segments.push({ addr: addr, data: data, is_global: is_global });
         return this.segments.length - 1;
     }
 
-    exportMemoryAs(name: string) {
+    exportMemoryAs(name : string) {
         this.exports.push({ name: name, kind: kExternalMemory, index: 0 });
     }
 
-    addFunctionTableInit(base: number, is_global: boolean,
-        array: number[], is_import = false) {
+    addFunctionTableInit(base : number, is_global : boolean,
+                         array : number[], is_import = false) {
         this.function_table_inits.push({
-            base: base, is_global: is_global,
-            array: array
+            base : base, is_global : is_global,
+            array : array,
         });
         if (!is_global) {
-            var length = base + array.length;
+            const length = base + array.length;
             if (length > this.function_table_length_min && !is_import) {
                 this.function_table_length_min = length;
             }
@@ -800,28 +814,30 @@ export class ModuleBuilder {
         return this;
     }
 
-    appendToTable(array: number[]) {
-        for (let n of array) {
-            if (typeof n != 'number')
-                throw new Error('invalid table (entries have to be numbers): ' + array);
+    appendToTable(array : number[]) {
+        for (const n of array) {
+            if (typeof n !== "number") {
+                throw new Error(
+                    "invalid table (entries have to be numbers): " + array);
+            }
         }
         return this.addFunctionTableInit(0, false, array);
     }
 
-    setFunctionTableBounds(min: number, max: number) {
+    setFunctionTableBounds(min : number, max : number) {
         this.function_table_length_min = min;
         this.function_table_length_max = max;
         return this;
     }
 
-    setName(name: string) {
+    setName(name : string) {
         this.name = name;
         return this;
     }
 
     toArray(debug = false) {
-        let binary = new Binary;
-        let wasm = this;
+        const binary = new Binary();
+        const wasm = this;
 
         // Add header
         binary.emit_header();
@@ -829,16 +845,16 @@ export class ModuleBuilder {
         // Add type section
         if (wasm.types.length > 0) {
             if (debug) console.info("emitting types @ " + binary.bytes.length);
-            binary.emit_section(kTypeSectionCode, section => {
+            binary.emit_section(kTypeSectionCode, (section) => {
                 section.emit_u32v(wasm.types.length);
-                for (let type of wasm.types) {
+                for (const type of wasm.types) {
                     section.emit_u8(kWasmFunctionTypeForm);
                     section.emit_u32v(type.params.length);
-                    for (let param of type.params) {
+                    for (const param of type.params) {
                         section.emit_u8(param);
                     }
                     section.emit_u32v(type.results.length);
-                    for (let result of type.results) {
+                    for (const result of type.results) {
                         section.emit_u8(result);
                     }
                 }
@@ -847,36 +863,43 @@ export class ModuleBuilder {
 
         // Add imports section
         if (wasm.imports.length > 0) {
-            if (debug) console.info("emitting imports @ " + binary.bytes.length);
-            binary.emit_section(kImportSectionCode, section => {
+            if (debug) {
+                console.info("emitting imports @ " + binary.bytes.length);
+            }
+            binary.emit_section(kImportSectionCode, (section) => {
                 section.emit_u32v(wasm.imports.length);
-                for (let imp of wasm.imports) {
+                for (const imp of wasm.imports) {
                     section.emit_string(imp.module);
-                    section.emit_string(imp.name || '');
+                    section.emit_string(imp.name || "");
                     section.emit_u8(imp.kind);
-                    if (imp.kind == kExternalFunction) {
+                    if (imp.kind === kExternalFunction) {
                         section.emit_u32v(imp.type || 0);
-                    } else if (imp.kind == kExternalGlobal) {
+                    } else if (imp.kind === kExternalGlobal) {
                         section.emit_u32v(imp.type || 0);
                         section.emit_u8(imp.mutable ? 1 : 0);
-                    } else if (imp.kind == kExternalMemory) {
-                        var has_max = (typeof imp.maximum) != "undefined";
-                        var is_shared = (typeof imp.shared) != "undefined";
+                    } else if (imp.kind === kExternalMemory) {
+                        const has_max = (typeof imp.maximum) !== "undefined";
+                        const is_shared = (typeof imp.shared) !== "undefined";
                         if (is_shared) {
                             section.emit_u8(has_max ? 3 : 2); // flags
                         } else {
                             section.emit_u8(has_max ? 1 : 0); // flags
                         }
                         section.emit_u32v(imp.initial || 0); // initial
-                        if (has_max) section.emit_u32v(imp.maximum || 0); // maximum
-                    } else if (imp.kind == kExternalTable) {
+                        if (has_max) {
+                            section.emit_u32v(imp.maximum || 0); // maximum
+                        }
+                    } else if (imp.kind === kExternalTable) {
                         section.emit_u8(kWasmAnyFunctionTypeForm);
-                        var has_max = (typeof imp.maximum) != "undefined";
+                        const has_max = (typeof imp.maximum) !== "undefined";
                         section.emit_u8(has_max ? 1 : 0); // flags
                         section.emit_u32v(imp.initial || 0); // initial
-                        if (has_max) section.emit_u32v(imp.maximum || 0); // maximum
+                        if (has_max) {
+                            section.emit_u32v(imp.maximum || 0); // maximum
+                        }
                     } else {
-                        throw new Error("unknown/unsupported import kind " + imp.kind);
+                        throw new Error(
+                            "unknown/unsupported import kind " + imp.kind);
                     }
                 }
             });
@@ -885,11 +908,12 @@ export class ModuleBuilder {
         // Add functions declarations
         if (wasm.functions.length > 0) {
             if (debug) {
-                console.info("emitting function decls @ " + binary.bytes.length);
+                console.info(
+                    "emitting function decls @ " + binary.bytes.length);
             }
-            binary.emit_section(kFunctionSectionCode, section => {
+            binary.emit_section(kFunctionSectionCode, (section) => {
                 section.emit_u32v(wasm.functions.length);
-                for (let func of wasm.functions) {
+                for (const func of wasm.functions) {
                     section.emit_u32v(func.type_index);
                 }
             });
@@ -898,7 +922,7 @@ export class ModuleBuilder {
         // Add function_table.
         if (wasm.function_table_length_min > 0) {
             if (debug) console.info("emitting table @ " + binary.bytes.length);
-            binary.emit_section(kTableSectionCode, section => {
+            binary.emit_section(kTableSectionCode, (section) => {
                 section.emit_u8(1);  // one table entry
                 section.emit_u8(kWasmAnyFunctionTypeForm);
                 // TODO(gdeepti): Cleanup to use optional max flag,
@@ -913,7 +937,7 @@ export class ModuleBuilder {
         const memory = wasm.memory;
         if (memory !== undefined) {
             if (debug) console.info("emitting memory @ " + binary.bytes.length);
-            binary.emit_section(kMemorySectionCode, section => {
+            binary.emit_section(kMemorySectionCode, (section) => {
                 section.emit_u8(1);  // one memory entry
                 const has_max = memory.max !== undefined;
                 const is_shared = memory.shared !== undefined;
@@ -979,13 +1003,13 @@ export class ModuleBuilder {
         //   }
 
         // Add export table.
-        var mem_export = (wasm.memory !== undefined && wasm.memory.exp);
-        var exports_count = wasm.exports.length + (mem_export ? 1 : 0);
+        const mem_export = (wasm.memory !== undefined && wasm.memory.exp);
+        const exports_count = wasm.exports.length + (mem_export ? 1 : 0);
         if (exports_count > 0) {
             if (debug) console.log("emitting exports @ " + binary.bytes.length);
-            binary.emit_section(kExportSectionCode, section => {
+            binary.emit_section(kExportSectionCode, (section) => {
                 section.emit_u32v(exports_count);
-                for (let exp of wasm.exports) {
+                for (const exp of wasm.exports) {
                     section.emit_string(exp.name);
                     section.emit_u8(exp.kind);
                     section.emit_u32v(exp.index);
@@ -1000,8 +1024,11 @@ export class ModuleBuilder {
 
         // Add start function section.
         if (wasm.start_index >= 0) {
-            if (debug) console.info("emitting start function @ " + binary.bytes.length);
-            binary.emit_section(kStartSectionCode, section => {
+            if (debug) {
+                console.info(
+                    "emitting start function @ " + binary.bytes.length);
+            }
+            binary.emit_section(kStartSectionCode, (section) => {
                 section.emit_u32v(wasm.start_index);
             });
         }
@@ -1009,11 +1036,11 @@ export class ModuleBuilder {
         // Add table elements.
         if (wasm.function_table_inits.length > 0) {
             if (debug) console.info("emitting table @ " + binary.bytes.length);
-            binary.emit_section(kElementSectionCode, section => {
-                var inits = wasm.function_table_inits;
+            binary.emit_section(kElementSectionCode, (section) => {
+                const inits = wasm.function_table_inits;
                 section.emit_u32v(inits.length);
 
-                for (let init of inits) {
+                for (const init of inits) {
                     section.emit_u8(0); // table index
                     if (init.is_global) {
                         section.emit_u8(kExprGetGlobal);
@@ -1023,7 +1050,7 @@ export class ModuleBuilder {
                     section.emit_u32v(init.base);
                     section.emit_u8(kExprEnd);
                     section.emit_u32v(init.array.length);
-                    for (let index of init.array) {
+                    for (const index of init.array) {
                         section.emit_u32v(index);
                     }
                 }
@@ -1032,12 +1059,14 @@ export class ModuleBuilder {
 
         // Add exceptions.
         if (wasm.exceptions.length > 0) {
-            if (debug) console.info("emitting exceptions @ " + binary.bytes.length);
-            binary.emit_section(kExceptionSectionCode, section => {
+            if (debug) {
+                console.info("emitting exceptions @ " + binary.bytes.length);
+            }
+            binary.emit_section(kExceptionSectionCode, (section) => {
                 section.emit_u32v(wasm.exceptions.length);
-                for (let type of wasm.exceptions) {
+                for (const type of wasm.exceptions) {
                     section.emit_u32v(type.params.length);
-                    for (let param of type.params) {
+                    for (const param of type.params) {
                         section.emit_u8(param);
                     }
                 }
@@ -1048,32 +1077,37 @@ export class ModuleBuilder {
         if (wasm.functions.length > 0) {
             // emit function bodies
             if (debug) console.info("emitting code @ " + binary.bytes.length);
-            binary.emit_section(kCodeSectionCode, section => {
+            binary.emit_section(kCodeSectionCode, (section) => {
                 section.emit_u32v(wasm.functions.length);
-                for (let func of wasm.functions) {
+                for (const func of wasm.functions) {
                     // Function body length will be patched later.
-                    let local_decls = [];
-                    for (let l of func.locals || []) {
+                    const local_decls = [];
+                    for (const l of func.locals || []) {
                         if (l.i32_count > 0) {
-                            local_decls.push({ count: l.i32_count, type: Type.kI32 });
+                            local_decls.push(
+                                { count: l.i32_count, type: Type.kI32 });
                         }
                         if (l.i64_count > 0) {
-                            local_decls.push({ count: l.i64_count, type: Type.kI64 });
+                            local_decls.push(
+                                { count: l.i64_count, type: Type.kI64 });
                         }
                         if (l.f32_count > 0) {
-                            local_decls.push({ count: l.f32_count, type: Type.kF32 });
+                            local_decls.push(
+                                { count: l.f32_count, type: Type.kF32 });
                         }
                         if (l.f64_count > 0) {
-                            local_decls.push({ count: l.f64_count, type: Type.kF64 });
+                            local_decls.push(
+                                { count: l.f64_count, type: Type.kF64 });
                         }
                         if (l.s128_count > 0) {
-                            local_decls.push({ count: l.s128_count, type: Type.kS128 });
+                            local_decls.push(
+                                { count: l.s128_count, type: Type.kS128 });
                         }
                     }
 
-                    let header = new Binary;
+                    const header = new Binary();
                     header.emit_u32v(local_decls.length);
-                    for (let decl of local_decls) {
+                    for (const decl of local_decls) {
                         header.emit_u32v(decl.count);
                         header.emit_u8(decl.type);
                     }
@@ -1087,10 +1121,13 @@ export class ModuleBuilder {
 
         // Add data segments.
         if (wasm.segments.length > 0) {
-            if (debug) console.info("emitting data segments @ " + binary.bytes.length);
-            binary.emit_section(kDataSectionCode, section => {
+            if (debug) {
+                console.info(
+                    "emitting data segments @ " + binary.bytes.length);
+            }
+            binary.emit_section(kDataSectionCode, (section) => {
                 section.emit_u32v(wasm.segments.length);
-                for (let seg of wasm.segments) {
+                for (const seg of wasm.segments) {
                     section.emit_u8(0);  // linear memory index 0
                     if (seg.is_global) {
                         // initializer is a global variable
@@ -1109,34 +1146,38 @@ export class ModuleBuilder {
         }
 
         // Add any explicitly added sections
-        for (let exp of wasm.explicit) {
-            if (debug) console.info("emitting explicit @ " + binary.bytes.length);
+        for (const exp of wasm.explicit) {
+            if (debug) {
+                console.info("emitting explicit @ " + binary.bytes.length);
+            }
             binary.emit_bytes(exp);
         }
 
         // Add names.
         let num_function_names = 0;
         let num_functions_with_local_names = 0;
-        for (let func of wasm.functions) {
+        for (const func of wasm.functions) {
             if (func.name !== undefined)++num_function_names;
             if (func.numLocalNames() > 0)++num_functions_with_local_names;
         }
         if (num_function_names > 0 || num_functions_with_local_names > 0 ||
             wasm.name !== undefined) {
-            if (debug) console.info('emitting names @ ' + binary.bytes.length);
-            binary.emit_section(kUnknownSectionCode, section => {
-                section.emit_string('name');
+            if (debug) {
+                console.info("emitting names @ " + binary.bytes.length);
+            }
+            binary.emit_section(kUnknownSectionCode, (section) => {
+                section.emit_string("name");
                 // Emit module name.
                 if (wasm.name !== undefined) {
-                    section.emit_section(kModuleNameCode, name_section => {
+                    section.emit_section(kModuleNameCode, (name_section) => {
                         name_section.emit_string(wasm.name);
                     });
                 }
                 // Emit function names.
                 if (num_function_names > 0) {
-                    section.emit_section(kFunctionNamesCode, name_section => {
+                    section.emit_section(kFunctionNamesCode, (name_section) => {
                         name_section.emit_u32v(num_function_names);
-                        for (let func of wasm.functions) {
+                        for (const func of wasm.functions) {
                             if (func.name === undefined) continue;
                             name_section.emit_u32v(func.index);
                             name_section.emit_string(func.name);
@@ -1145,10 +1186,10 @@ export class ModuleBuilder {
                 }
                 // Emit local names.
                 if (num_functions_with_local_names > 0) {
-                    section.emit_section(kLocalNamesCode, name_section => {
+                    section.emit_section(kLocalNamesCode, (name_section) => {
                         name_section.emit_u32v(num_functions_with_local_names);
-                        for (let func of wasm.functions) {
-                            if (func.numLocalNames() == 0) continue;
+                        for (const func of wasm.functions) {
+                            if (func.numLocalNames() === 0) continue;
                             name_section.emit_u32v(func.index);
                             name_section.emit_u32v(func.numLocalNames());
                             for (let i = 0; i < func.local_names.length; ++i) {
@@ -1166,11 +1207,11 @@ export class ModuleBuilder {
     }
 
     toBuffer(debug = false) {
-        let bytes = this.toArray(debug).bytes;
-        let buffer = new ArrayBuffer(bytes.length);
-        let view = new Uint8Array(buffer);
+        const bytes = this.toArray(debug).bytes;
+        const buffer = new ArrayBuffer(bytes.length);
+        const view = new Uint8Array(buffer);
         for (let i = 0; i < bytes.length; i++) {
-            let val = bytes[i];
+            const val = bytes[i];
             console.assert(typeof val === "number");
             // if ((typeof val) == "string") val = val.charCodeAt(0);
             view[i] = val | 0;
@@ -1178,13 +1219,13 @@ export class ModuleBuilder {
         return buffer;
     }
 
-    instantiate(ffi?: any) {
-        let module = new WebAssembly.Module(this.toBuffer());
-        let instance = new WebAssembly.Instance(module, ffi);
+    instantiate(ffi? : any) {
+        const module = new WebAssembly.Module(this.toBuffer());
+        const instance = new WebAssembly.Instance(module, ffi);
         return instance;
     }
 
-    asyncInstantiate(ffi: any) {
+    asyncInstantiate(ffi : any) {
         return WebAssembly.instantiate(this.toBuffer(), ffi)
             .then(({ module, instance }) => instance);
     }
