@@ -22,15 +22,15 @@ test("run_store_load", () => {
     builder.addType(Wasm.kSig_i_ii);
     builder.addFunction("store", Wasm.kSig_v_ii)
         .addBody([
-            Opcode.kGetLocal, 0,         // --
-            Opcode.kGetLocal, 1,         // --
-            Opcode.kI32StoreMem, 0, 0])  // --
+            Opcode.kGetLocal, 0,      // --
+            Opcode.kGetLocal, 1,      // --
+            Opcode.kI32Store, 0, 0])  // --
       .exportAs("store");
 
     builder.addFunction("load", Wasm.kSig_i_i)
       .addBody([
-        Opcode.kGetLocal, 0,        // --
-        Opcode.kI32LoadMem, 0, 0])  // --
+        Opcode.kGetLocal, 0,     // --
+        Opcode.kI32Load, 0, 0])  // --
       .exportAs("load");
 
     const i = builder.instantiate();
@@ -49,9 +49,9 @@ test("run_store_load_export_import_memory", () => {
         builder.addType(Wasm.kSig_i_ii);
         builder.addFunction("store", Wasm.kSig_v_ii)
             .addBody([
-                Opcode.kGetLocal, 0,         // --
-                Opcode.kGetLocal, 1,         // --
-                Opcode.kI32StoreMem, 0, 0])  // --
+                Opcode.kGetLocal, 0,      // --
+                Opcode.kGetLocal, 1,      // --
+                Opcode.kI32Store, 0, 0])  // --
         .exportAs("store");
         i1 = builder.instantiate();
     }
@@ -63,8 +63,8 @@ test("run_store_load_export_import_memory", () => {
         builder.addType(Wasm.kSig_i_ii);
         builder.addFunction("load", Wasm.kSig_i_i)
             .addBody([
-                Opcode.kGetLocal, 0,        // --
-                Opcode.kI32LoadMem, 0, 0])  // --
+                Opcode.kGetLocal, 0,     // --
+                Opcode.kI32Load, 0, 0])  // --
             .exportAs("load");
         i2 = builder.instantiate(
             { I : { imported_mem : i1.exports.exported_mem}});
@@ -92,7 +92,7 @@ test("run_indirect_call_two_modules", () => {
 
         builder.addFunction("main", Wasm.kSig_i_i)
         .addBody([
-            Opcode.kGetLocal, 0,   // --
+            Opcode.kGetLocal, 0,                            // --
             Opcode.kCallIndirect, sig_index1, kTableZero])  // --
         .exportAs("main");
 
@@ -115,7 +115,7 @@ test("run_indirect_call_two_modules", () => {
 
         builder.addFunction("main", Wasm.kSig_i_i)
         .addBody([
-            Opcode.kGetLocal, 0,   // --
+            Opcode.kGetLocal, 0,                            // --
             Opcode.kCallIndirect, sig_index2, kTableZero])  // --
         .exportAs("main");
 
