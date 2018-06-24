@@ -20,27 +20,8 @@ export const kHeaderSize = 8;
 export const kPageSize = 65536;
 export const kSpecMaxPages = 65535;
 
-function bytesWithHeader() : ArrayBuffer {
-    const buffer = new ArrayBuffer(kHeaderSize + arguments.length);
-    const view = new Uint8Array(buffer);
-    view[0] = kWasmH0;
-    view[1] = kWasmH1;
-    view[2] = kWasmH2;
-    view[3] = kWasmH3;
-    view[4] = kWasmV0;
-    view[5] = kWasmV1;
-    view[6] = kWasmV2;
-    view[7] = kWasmV3;
-    for (let i = 0; i < arguments.length; i++) {
-        let val = arguments[i];
-        if ((typeof val) === "string") val = val.charCodeAt(0);
-        view[kHeaderSize + i] = val | 0;
-    }
-    return buffer;
-}
-
 // Section declaration constants
-enum SectionCode {
+export enum SectionCode {
     kUnknown = 0,
     kType = 1,        // Function signature declarations
     kImport = 2,      // Import declarations
@@ -59,7 +40,7 @@ enum SectionCode {
 }
 
 // Name section types
-enum NameCode {
+export enum NameCode {
     kModule = 0,
     kFunctions = 1,
     kLocals = 2,
@@ -97,6 +78,7 @@ export const kSig_i_iii = makeSig(
 export const kSig_d_dd = makeSig([Type.kF64, Type.kF64], [Type.kF64]);
 export const kSig_l_ll = makeSig([Type.kI64, Type.kI64], [Type.kI64]);
 export const kSig_i_dd = makeSig([Type.kF64, Type.kF64], [Type.kI32]);
+export const kSig_d_i = makeSig([Type.kI32], [Type.kF64]);
 export const kSig_v_v = makeSig([], []);
 export const kSig_i_v = makeSig([], [Type.kI32]);
 export const kSig_l_v = makeSig([], [Type.kI64]);
@@ -379,23 +361,31 @@ export const kTrapFuncSigMismatch = 7;
 export const kTrapTypeError = 8;
 
 
-function wasmI32Const(val : number) {
-    const bytes = [Opcode.kI32Const];
+export function emitI32V(val : number, buffer : number[]) {
     for (let i = 0; i < 4; ++i) {
-        bytes.push(0x80 | ((val >> (7 * i)) & 0x7f));
+        buffer.push(0x80 | ((val >> (7 * i)) & 0x7f));
     }
-    bytes.push((val >> (7 * 4)) & 0x7f);
-    return bytes;
+    buffer.push((val >> (7 * 4)) & 0x7f);
 }
 
-function wasmF32Const(f : number) {
-    return [Opcode.kF32Const].concat(
-        Array.from(new Uint8Array((new Float32Array([f])).buffer)));
+export function emitU32V(val : number, buffer : number[]) {
+    while (true) {
+        const v = val & 0xff;
+        val = val >>> 7;
+        if (val === 0) {
+            buffer.push(v);
+            break;
+        }
+        buffer.push(v | 0x80);
+    }
 }
 
-function wasmF64Const(f : number) {
-    return [Opcode.kF64Const].concat(
-        Array.from(new Uint8Array((new Float64Array([f])).buffer)));
+export function emitF32V(f : number, buffer : number[]) {
+    buffer.push(...Array.from(new Uint8Array((new Float32Array([f])).buffer)));
+}
+
+export function emitF64V(f : number, buffer : number[]) {
+    buffer.push(...Array.from(new Uint8Array((new Float64Array([f])).buffer)));
 }
 
 // Used for encoding f32 and double constants to bits.
@@ -484,12 +474,9 @@ export class Binary {
     }
 }
 
-export interface ILocalsCounts {
-    i32_count : number;
-    i64_count : number;
-    f32_count : number;
-    f64_count : number;
-    s128_count : number;
+export interface ILocal {
+    count : number;
+    type : Type;
 }
 
 export class FunctionBuilder {
@@ -497,7 +484,7 @@ export class FunctionBuilder {
     name : string;
     type_index : number;
     body : number[];
-    locals : ILocalsCounts[];
+    locals : ILocal[];
     local_names : string[];
     index : number = -1;
 
@@ -550,16 +537,12 @@ export class FunctionBuilder {
     getNumLocals() {
         let total_locals = 0;
         for (const l of this.locals || []) {
-            total_locals += l.i32_count;
-            total_locals += l.i64_count;
-            total_locals += l.f32_count;
-            total_locals += l.f64_count;
-            total_locals += l.s128_count;
+            total_locals += l.count;
         }
         return total_locals;
     }
 
-    addLocals(locals : ILocalsCounts, names : string[]) {
+    addLocals(locals : ILocal, names? : string[]) {
         const old_num_locals = this.getNumLocals();
         if (!this.locals) this.locals = [];
         this.locals.push(locals);
@@ -1065,30 +1048,7 @@ export class ModuleBuilder {
                 section.emit_u32v(wasm.functions.length);
                 for (const func of wasm.functions) {
                     // Function body length will be patched later.
-                    const local_decls = [];
-                    for (const l of func.locals || []) {
-                        if (l.i32_count > 0) {
-                            local_decls.push(
-                                { count: l.i32_count, type: Type.kI32 });
-                        }
-                        if (l.i64_count > 0) {
-                            local_decls.push(
-                                { count: l.i64_count, type: Type.kI64 });
-                        }
-                        if (l.f32_count > 0) {
-                            local_decls.push(
-                                { count: l.f32_count, type: Type.kF32 });
-                        }
-                        if (l.f64_count > 0) {
-                            local_decls.push(
-                                { count: l.f64_count, type: Type.kF64 });
-                        }
-                        if (l.s128_count > 0) {
-                            local_decls.push(
-                                { count: l.s128_count, type: Type.kS128 });
-                        }
-                    }
-
+                    const local_decls = func.locals || [];
                     const header = new Binary();
                     header.emit_u32v(local_decls.length);
                     for (const decl of local_decls) {

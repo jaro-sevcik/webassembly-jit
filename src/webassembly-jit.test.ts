@@ -132,3 +132,39 @@ test("run_indirect_call_two_modules", () => {
     expect(i1.exports.main(1)).toBe(22);
     expect(i2.exports.main(1)).toBe(22);
 });
+
+test("run_load_import_memory", () => {
+    const mem = new WebAssembly.Memory({initial : 1, maximum : 1});
+
+    const builder = new Wasm.ModuleBuilder();
+    builder.addImportedMemory("I", "imported_mem");
+    builder.addType(Wasm.kSig_i_ii);
+    builder.addFunction("load", Wasm.kSig_i_i)
+        .addBody([
+            Opcode.kGetLocal, 0,     // --
+            Opcode.kI32Load, 0, 0])  // --
+        .exportAs("load");
+    const i = builder.instantiate(
+        { I : { imported_mem : mem }});
+
+    const mem_i32 = new Int32Array(mem.buffer);
+    mem_i32[1] = 11;
+
+    expect(i.exports.load(4)).toBe(11);
+});
+
+test("run_set_get_local", () => {
+    const builder = new Wasm.ModuleBuilder();
+    builder.addType(Wasm.kSig_i_v);
+    builder.addFunction("main", Wasm.kSig_i_v)
+      .addLocals({ count : 1, type : Wasm.Type.kI32 })
+      .addBody([
+        Opcode.kI32Const, 11,   // --
+        Opcode.kSetLocal, 0,    // --
+        Opcode.kGetLocal, 0])
+      .exportAs("main");
+
+    const i = builder.instantiate();
+
+    expect(i.exports.main()).toBe(11);
+});
