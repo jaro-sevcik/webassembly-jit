@@ -542,10 +542,10 @@ export class FunctionBuilder {
         return total_locals;
     }
 
-    addLocals(locals : ILocal, names? : string[]) {
+    addLocals(locals : ILocal[], names? : string[]) {
         const old_num_locals = this.getNumLocals();
         if (!this.locals) this.locals = [];
-        this.locals.push(locals);
+        this.locals.push(...locals);
         if (names) {
             if (!this.local_names) this.local_names = [];
             const missing_names = old_num_locals - this.local_names.length;

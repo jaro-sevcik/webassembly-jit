@@ -157,7 +157,7 @@ test("run_set_get_local", () => {
     const builder = new Wasm.ModuleBuilder();
     builder.addType(Wasm.kSig_i_v);
     builder.addFunction("main", Wasm.kSig_i_v)
-      .addLocals({ count : 1, type : Wasm.Type.kI32 })
+      .addLocals([{ count : 1, type : Wasm.Type.kI32 }])
       .addBody([
         Opcode.kI32Const, 11,   // --
         Opcode.kSetLocal, 0,    // --
