@@ -168,3 +168,29 @@ test("run_set_get_local", () => {
 
     expect(i.exports.main()).toBe(11);
 });
+
+test("run_set_get_local", () => {
+    const builder = new Wasm.ModuleBuilder();
+    builder.addType(Wasm.kSig_i_v);
+    builder.addFunction("main", Wasm.kSig_i_i)
+      .addLocals([{ count : 1, type : Wasm.Type.kI32 }])
+      .addBody([
+        Opcode.kBlock, Wasm.Type.kStmt, // --
+        Opcode.kBlock, Wasm.Type.kStmt, // --
+        Opcode.kGetLocal, 0,            // --
+        Opcode.kBrIf, 0,                // --
+        Opcode.kI32Const, 11,           // --
+        Opcode.kSetLocal, 1,            // --
+        Opcode.kBr, 1,                  // --
+        Opcode.kEnd,                    // --
+        Opcode.kI32Const, 22,           // --
+        Opcode.kSetLocal, 1,            // --
+        Opcode.kEnd,                    // --
+        Opcode.kGetLocal, 1])
+      .exportAs("main");
+
+    const i = builder.instantiate();
+
+    expect(i.exports.main(0)).toBe(11);
+    expect(i.exports.main(1)).toBe(22);
+});
